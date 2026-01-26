@@ -1,0 +1,36 @@
+def rule_based_filter(df, user):
+    filtered = df.copy()
+
+    # Region filter
+    filtered = filtered[filtered["region"] == user["region"]]
+
+    # Diet type filter
+    if "diet_type" in user:
+        filtered = filtered[filtered["diet_type"] == user["diet_type"]]
+
+    # Goal-based rules
+    if user["goal"] == "fat_loss":
+        filtered = filtered[
+            (filtered["calories"] <= 500) &
+            (filtered["fat"] <= 20)
+        ]
+
+    elif user["goal"] == "muscle_gain":
+        filtered = filtered[
+            (filtered["protein"] >= 20) &
+            (filtered["calories"] >= 400)
+        ]
+
+    # Activity-based
+    if user["activity"] == "sedentary":
+        filtered = filtered[filtered["carbs"] <= 50]
+
+    # Allergy exclusion
+    if "allergy" in user:
+        filtered = filtered[
+            ~filtered["allergens"].str.contains(
+                user["allergy"], case=False, na=False
+            )
+        ]
+
+    return filtered
