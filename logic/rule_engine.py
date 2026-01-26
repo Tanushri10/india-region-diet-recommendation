@@ -34,3 +34,25 @@ def rule_based_filter(df, user):
         ]
 
     return filtered
+def generate_meal_plan(df):
+    plan = {}
+
+    plan["Breakfast"] = (
+        df[df["meal_type"].str.contains("Breakfast", case=False)]
+        .head(2)
+        .to_dict(orient="records")
+    )
+
+    plan["Lunch"] = (
+        df[df["meal_type"].str.contains("Lunch", case=False)]
+        .head(2)
+        .to_dict(orient="records")
+    )
+
+    plan["Dinner"] = (
+        df[df["meal_type"].str.contains("Dinner", case=False)]
+        .head(2)
+        .to_dict(orient="records")
+    )
+
+    return plan
