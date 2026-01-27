@@ -1,24 +1,23 @@
+from flask import Flask, request, jsonify
 from logic.load_data import load_food_data
 from logic.rule_engine import rule_based_filter, generate_meal_plan
 
-user = {
-    "region": "south india",
-    "goal": "fat_loss",
-    "activity": "moderate",
-    "diet_type": "veg"
-}
+app = Flask(__name__)
 
+@app.route("/recommend", methods=["POST"])
+def recommend():
+    user = request.get_json()
 
-df = load_food_data()
-filtered = rule_based_filter(df, user)
-meal_plan = generate_meal_plan(filtered)
+    if not user:
+        return jsonify({"error": "No input data provided"}), 400
 
-for meal_time, items in meal_plan.items():
-    print(f"\n{meal_time}:")
-    for item in items:
-        print(f"- {item['meal']} ({item['calories']} kcal, {item['protein']}g protein)")
+    df = load_food_data()
+    filtered = rule_based_filter(df, user)
+    meal_plan = generate_meal_plan(filtered)
 
-print(filtered[["meal", "calories", "protein", "meal_type"]].head())
-print(df["region"].unique())
-print(df["diet_type"].unique())
+    return jsonify(meal_plan)
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
 
