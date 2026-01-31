@@ -1,9 +1,15 @@
 from flask import Flask, request, jsonify
+
 from logic.load_data import load_food_data
 from logic.rule_engine import rule_based_filter, generate_meal_plan
 
+from db import init_db, save_feedback   # NEW
+
 app = Flask(__name__)
 
+# -------------------------------
+# Recommendation endpoint
+# -------------------------------
 @app.route("/recommend", methods=["POST"])
 def recommend():
     user = request.get_json()
@@ -17,7 +23,26 @@ def recommend():
 
     return jsonify(meal_plan)
 
+
+# -------------------------------
+# Feedback endpoint (NEW)
+# -------------------------------
+@app.route("/feedback", methods=["POST"])
+def feedback():
+    data = request.get_json()
+
+    if not data:
+        return jsonify({"error": "No feedback data provided"}), 400
+
+    save_feedback(data)
+    return jsonify({"message": "Feedback saved successfully"})
+
+
+# -------------------------------
+# Initialize DB and run app
+# -------------------------------
+init_db()   
+
 if __name__ == "__main__":
     app.run(debug=True)
-
 
