@@ -72,6 +72,19 @@ def rank_meals(df, user):
     df.loc[df["meal_type"].str.contains("Breakfast", case=False), "score"] += 1
     df.loc[df["meal_type"].str.contains("Lunch", case=False), "score"] += 2
     df.loc[df["meal_type"].str.contains("Dinner", case=False), "score"] += 1.5
+    df.loc[
+    df["ingredients"].str.contains(
+        "chicken|mutton|fish|egg|meat|prawns",
+        case=False,
+        na=False
+    ),
+    "score"
+] -= 100
+# Goal-specific ranking bias
+    if user["goal"] == "muscle_gain":
+     df["score"] += df["protein"] * 1.5
+     df["score"] += df["calories"] * 0.01
+
 
     return df.sort_values("score", ascending=False)
 
