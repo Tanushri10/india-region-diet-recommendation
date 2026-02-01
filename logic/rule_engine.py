@@ -35,6 +35,7 @@ def rule_based_filter(df, user):
 
     return filtered
 def generate_meal_plan(df):
+    df = df.fillna("None")
     plan = {}
 
     plan["Breakfast"] = (
